@@ -99,9 +99,17 @@ matplotlib.rcParms['axes.unicode_minus'] = False
 
 
 
-## 산점도(+ 버블 차트)
+## 산점도 scatter()
 
+- plt.scatter(x, y, s, c, cmap, alpha)
+  - s : 마커의 크기
+  - c : 색깔
+  - cmap : 컬러바 색상 종류
+  - alpha : 투명도
+- plt.colorbar() : 컬러바 생성
 
+- plt.hist2d(x,y, (가로 셀 개수, 세로 셀 개수), 이하 옵션 동일)
+  - 격자를 나눠 빈도를 알 수 있다.(밀집도를 알 수 있음)
 
 
 
