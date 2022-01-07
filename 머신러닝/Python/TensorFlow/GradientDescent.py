@@ -1,4 +1,6 @@
 import tensorflow as tf
+import numpy as np
+
 
 # Linear : 선형, regression : 회귀
 # Hypothesis : 가설
@@ -68,3 +70,19 @@ for i in range(100):
 # 거의 근사한 값이 나온다는 것을 알 수 있다.
 print(w*5 + b)  # tf.Tensor(5.0066934, shape=(), dtype=float32)
 print(w*2.5 + b)    # tf.Tensor(2.4946523, shape=(), dtype=float32)
+
+tf.random.set_seed(0)
+
+x = [1., 2., 3., 4.]
+y = [1., 3., 5., 7.]
+w = tf.Variable(tf.random.normal([1], -100., 100.))
+for step in range(300):
+    hypothesis = w*x
+    cost = tf.reduce_mean(tf.square(hypothesis - y))
+    alpha = 0.01
+    gradient = tf.reduce_mean(tf.multiply(tf.multiply(w, x) - y, x))
+    descent= w - tf.multiply(alpha, gradient)
+    w.assign(descent)
+
+    if step % 10 == 0:
+        print('{:5} | {:10.4f} | {:10.6f}'.format(step, cost.numpy(), w.numpy()[0]))
