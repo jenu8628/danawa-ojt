@@ -44,3 +44,5 @@
 - git flow 학습 및 실습
   - 파이참 git Flow Integration을 이용한 Git 브랜치 관리
 - 텐서플로우 튜토리얼
+- 머신러닝 개념 학습 및 경사하강 알고리즘 코드 구현
+  - 선형회귀(Linear Regression), 가설(Hypothesis), 비용함수(Cost function), 경사하강법(Gradient Descent Algorithm), 볼록함수(Convex function) 학습
