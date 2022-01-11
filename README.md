@@ -68,3 +68,12 @@
 - Wike 사용법
   - 홈 작성
   - 통합 View와 홈 연결
+
+## 2022/01/11
+
+- 사내 VPN 설정
+- Docker
+  - Dockerfile 학습
+  - Dockerfile 작성
+    - ubuntu를 베이스로 python 실행
+    - code-server 실행

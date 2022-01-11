@@ -50,16 +50,18 @@ doker run [options] IMAGE[:TAG|@DIGESET] [COMMAND] [ARG...]
 
 다음은 자주 사용하는 옵션들입니다.
 
-| 옵션  | 설명                                                   |
-| :---- | :----------------------------------------------------- |
-| -d    | detached mode 흔히 말하는 백그라운드 모드              |
-| -p    | 호스트와 컨테이너의 포트를 연결 (포워딩)               |
-| -v    | 호스트와 컨테이너의 디렉토리를 연결 (마운트)           |
-| -e    | 컨테이너 내에서 사용할 환경변수 설정                   |
-| -name | 컨테이너 이름 설정                                     |
-| -rm   | 프로세스 종료시 컨테이너 자동 제거                     |
-| -it   | -i와 -t를 동시에 사용한 것으로 터미널 입력을 위한 옵션 |
-| -link | 컨테이너 연결 [컨테이너명:별칭]                        |
+| 옵션  | 설명                                                         |
+| :---- | :----------------------------------------------------------- |
+| -d    | detached mode 흔히 말하는 백그라운드 모드                    |
+| -p    | 호스트와 컨테이너의 포트를 연결 (포워딩)                     |
+| -v    | 호스트와 컨테이너의 디렉토리를 연결 (마운트)                 |
+| -e    | 컨테이너 내에서 사용할 환경변수 설정                         |
+| -name | 컨테이너 이름 설정                                           |
+| -rm   | 프로세스 종료시 컨테이너 자동 제거                           |
+| -it   | -i와 -t를 동시에 사용한 것으로 터미널 입력을 위한 옵션       |
+| -link | 컨테이너 연결 [컨테이너명:별칭]                              |
+| -i    | interacive라는 뜻. 컨테이너와 상호적으로 주고 받고 하겠다. 입력에 대한 출력을 나타내는 말 |
+| -t    | tty(터미널과 동일한 의미)를 사용하겠다. 즉 터미널과 비슷한 환경을 조성해줌. |
 
 
 
@@ -133,6 +135,24 @@ docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
 ```
 
 
+
+
+
+```
+# 이미지 목록보기
+docker images
+# containername이란 컨테이너를 image:tag로 생성 및 실행 시킬껀데 바로 터미널을 열것이고 bash를 사용할 것이다.
+docker run -it --name containername image:tag /bin/bash
+
+# 컨테이너를 tes:latest이미지를 통해 백그라운드 모드로 실행 포트 10000을 10000으로 맵핑할 것이다. 
+docker run -d -p 10000:10000 test:latest
+
+# containername이란 컨테이너를 bash 커맨드로 실행하고 interacive, tty옵션 적용
+docker exec -it containername bash
+
+# 이 이미지를 빌드할 것인데 .: 현재위치에 하겠다. 
+docker build -t test:latest .
+```
 
 
 
@@ -490,7 +510,347 @@ ls /data-volume/
   - 이때 컨테이너 실행 시 볼륨을 지정했다면 애써 docker cp 명령을 사용하지 않고도 해당 볼륨 경로에 변경된 웹 소스만 넣어주면 바로 적용이 가능하다.
 
 ```
+
 ```
+
+
+
+## Dockerfile
+
+### Dockerfile 명령어
+
+- FROM
+
+  - 생성하려는 이미지의 베이스 이미지 지정
+
+  - hub.docker.com에서 제공하는 공식 이미지를 권장
+
+  - 이미지를 선택할 때 작은 크기의 이미지(slim)와 리눅스 배포판인 알파인(Alpine) 이미지를 권장한다.
+
+  - 태그를 넣지 않으면 latest로 지정됨.
+
+    ```dockerfile
+    FROM ubuntu:18.04
+    ```
+
+- MAINTAINER
+
+  - 일반적으로 이미지를 빌드한 작성자 이름과 이메일을 작성
+
+    ```dockerfile
+    NAINTAINER hyunwoo.lee <wkfwktka@danawa.com>
+    ```
+
+- LABEL
+
+  - 이미지 작성 목적으로 버젼, 타이틀, 설명, 라이선스 정보 등을 작성. 1개 이상 작성 가능
+
+  - 사용법
+
+    ```dockerfile
+    LABEL purpose = 'Nginx for webserver'
+    LABEL version = '1.0'
+    LABEL description = 'web service application using Nginx'
+    ```
+
+  - 권장 사항
+
+    ```dockerfile
+    LABEL purpose = 'Nginx for webserver' \
+    	version = '1.0' \
+    	description = 'web service application using Nginx'
+    ```
+
+- RUN
+
+  - 설정된 기본 이미지에 패키지 업데이트, 각종 패키지 설치, 명령 실행 등을 작성. 1개 이상 작성 가능
+
+  - 사용 방법
+
+    ```dockerfile
+    RUN apt update
+    RUN apt -y install nginx
+    RUN apt -y install git
+    RUN apt -y install vim
+    RUN apt -y install curl
+    ```
+
+  - 권장 사항
+
+    - 다단계 빌드 사용 권장, 각 이미지별로 개별 Dockerfile로 빌드.
+    - RUN 명령어의 개별 명령 수를 최소화하기 위해 여러 설치 명령을 연결하면 이미지의 레이어 수 감소
+    - autoremove, autoclean, rm -rf/var/lib/apt/lists/*을 사용하면 저장되어 있는 apt 캐시가 삭제되므로 이미지 크기가 감소
+
+    ```dockerfile
+    # shell 방식
+    RUN apt update && apt install -y nginx git vim curl &&\
+    	apt-get clean -y && \
+    	apt-get autoremove -y && \
+    	rm -rfv /tmp/* /var/lib/apt/lists/* /var/tmp/*
+    # Exec 방식
+    RUN ["/bin/bash", "-c", "apt update"]
+    RUN ["/bin/bash", "-c", "apt -y install nginx git vim curl"]
+    ```
+
+- CMD
+
+  - 생성된 이미지를 컨테이너로 실행할 때 실해오디는 명령
+
+  - ENTRYPOINT 명령문으로 지정된 커맨드에 디폴트로 넘길 파라미터를 지정할 때 사용한다.
+
+  - **여러 개의 CMD를 작성해도 마지막 하나만 처리됨**
+
+  - 일반적으로 이미지의 컨테이너 실행 시 애플리케이션 데몬이 실행되도록 하는 경우 유용
+
+  - 사용방법
+
+    ```dockerfile
+    # Shell 방식
+    CMD apachectl -D FOREGROUND
+    # Exec 방식
+    CMD ["/usr/sbin/apachectl", '-D', "FOREGROUND"]
+    CMD ["nginx", "-g", "daemon off;"]
+    CMD ["python", "app.py"]
+    ```
+
+- ENTRYPOINT
+
+  - CMD와 마찬가지로 생성된 이미지가 컨테이너로 실행될 때 사용하지만, 컨테이너가 실행될 때 명령어 및 인자 값을 전달하여 실행한다는 점이 다르다.
+
+  - 여러 개의 CMD를 사용하는 경우 ENTRYPOINT 명령문과 함께 사용
+
+  - ENTRYPOINT는 커맨드를 지정하고, CMD는 기본명령을 지정하면 탄력적으로 이미지를 실행할 수 있다.
+
+  - ex) python명령을 기본으로 runapp.py 코드를 실행한다면,
+
+    ```dockerfile
+    ENTRYPOINT ["python"]
+    CMD ["runapp.py"]
+    ```
+
+  - 사용 예
+
+    - 동일 환경에 entrypoint.sh 셸 스크립트를 이미지에 넣고(ADD) 실행 권한 설정(RUN) 후 컨테이너 실행 시 entrypoint.sh를 실행(ENTRYPOINT).
+
+    ```dockerfile
+    ...
+    ADD ./entrypoint.sh /entrypoint.sh
+    RUN chmod +x /entrypoint.sh
+    ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+    ```
+
+  - CMD와 ENTRYPOINT 비교
+
+    - ENTRYPOINT는 도커 컨테이너 실행 시 항상 수행해야 하는 명령어를 지정(ex. 웹서버, DB등의 데몬 실행)
+    - CMD는 도커 컨테이너 실행 시 다양한 명령어를 지정하는 경우 유용
+
+- COPY
+
+  - 호스트 환경의 파일, 디렉터리를 이미지 안에 복사하는 경우 작성
+
+  - 단순한 복사 작업만 지원
+
+  - 빌드 작업 디렉터리 외부의 파일은 COPY할 수 없음
+
+  - 사용법
+
+    ```dockerfile
+    COPY index.htmnl /usr/share/Nginx/html
+    COPY ./runapp.oy
+    
+    # 주의
+    COPY ./runapp.py 작업 영역 전체를 COPY하므로 비효율적임.
+    ```
+
+- ADD
+
+  - 호스트 환경의 파일, 디렉터리를 이미지 안에 복사하는 경우뿐만 아니라 URL 주소에서 직접 다운로드하여 이미지에 넣을 수도 있고, 압축 파일(tar, tar.gz)인 경우에는 지정한 경로에 압축을 풀어서 추가한다.
+
+  - 빌드 작업 디렉터리 외부의 파일은 ADD할 수 없고, 디렉터리 추가 시에는 /로 끝나야 한다.
+
+  - 사용 방법
+
+    ```dockerfile
+    ADD index.html /usr/share/nginx/html
+    ADD http://example.com/view/customer.tar.gz/workspace/data/
+    ADD website.tar.gz /var/www/html
+    ```
+
+- ENV
+
+  - 이미지 안에 각종 환경 변수를 지정하는 경우 작성
+
+  - 애플리케이션 사용을 쉽게 하려면 사전에 구성되어야 하는 환경 변수들이 있다.
+
+  - 예를 들어, 자바 홈 디렉터리, 특정 실행 파일의 경로를 보장하기 위해 절대 경로 지정을 위한 PATH 설정, 프로그램 버전 등을 사전에 설정한다.
+
+  - 반복된 표현이 사용되는 경우에도 환경 변수 설정을 권장
+
+  - Dockerfile에서 ENV를 설정하면 RUN, WORKDIR 등에서 환경 변수를 사용해 반복을 피할 수 있다.
+
+  - 사용 방법
+
+    ``` dockerfile
+    ENV JAVA_NOME / usr/lib/jvm/java-8-oracle
+    ENV PATH /usr/local/nginx/bin:$PATH
+    ENV Python 3.9
+    사용 예
+    ```
+
+- EXPOSE
+
+  - 컨테이너가 호스트 네트워크를 통해 들어오는 트래픽을 리스닝하는 포트와 프로토콜을 지정하기 위해 작성
+
+  - Nginx나 apache는 기본 포트로 HTTP 80번과 HTTPS 443번 포트를 사용하고, 컨테이너 모니터링 이미지로 사용하는 Cadvisor 컨테이너는 8080번 포트를 사용한다.
+
+  - 이미지 내에 애플리케이션이 사용하는 포트를 사전에 확인하고 호스트와 연결되도록 구성하는 경우에 설정하고, docker run 사용시 -p 옵션을 통해 사용한다.
+
+  - 사용 방법
+
+    ```dockerfile
+    EXPOSE 80 또는 EXPOSE 80/tcp
+    EXPOSE 443
+    EXPOSE 8080/udp
+    ```
+
+- VOLUME
+
+  - 볼륨을 이미지 빌드에 미리 설정하는 경우 작성
+
+  - 도커 컨테이너에서 사용된 파일과 디렉터리는 컨테이너 삭제와 함께 사라진다. 따라서 사용자 데이터의 보존과 지속성을 위해 볼륨 사용을 권장
+
+  - 볼륨으로 지정된 컨테이너의 경로는 볼륨의 기본 경로 /var/lib/docker와 자동으로 연결됨
+
+  - 사용 방법
+
+    ```dockerfile
+    VOLUME /var/log
+    VOLUME /var/www/html
+    VOLUME /etc/nginx
+    # HOST OS의 Volume 기본 경로와 container 내부의 /project 연결
+    VOLUME ["project"]
+    ```
+
+- USER
+
+  - 컨테이너의 기본 사용자는 root다. 애플리케이션이 권한 없이 서비스를 실행할 수 있다면 USER를 통해 다른 사용자로 변경하여 사용한다.
+
+  - 사용 방법
+
+    ```dockerfile
+    RUN ['useradd', 'Jenu']
+    USER kevinlee
+    RUN ["/bin/bash", "-c", "date"]
+    또는,
+    RUN groupadd -r mongodb && =
+    useradd --no-log-init -r -g mongodb mongodb
+    ```
+
+- WORKDIR
+
+  - 컨테이너상에서 작업할 경로(디렉터리) 전환을 위해 작성
+
+  - WORKDIR을 설정하면 RUN, CMD, ENTRYPOINT, COPY, ADD 명령문은 해당 디렉터리를 기준으로 실행
+
+  - 지정한 경로가 없으면 자동 생성되고, 컨테이너 실행 이후 컨테이너에 접속(docker exet -it my_container bash)하면 지정한 경로로 연결된다.
+
+  - 사용 방법
+
+    ```dockerfile
+    WORKDIR /workspace
+    WORKDIR /usr/share/nginx/html
+    WORKDIR /go/src/app
+    ```
+
+- ARG
+
+  - docker build 시점에서 변숫값을 전달하기 위해 --build-arg=인자=인자를 정의하여 사용
+
+  - 비밀 키, 계정 비밀번호 같은 민감한 정보 사용 시 이미지에 그대로 존재하여 노출될 위험이 있으므로 주의
+
+  - 사용 방법
+
+    ```dockerfile
+    --Dockerfile에 ARG 변수를 저장하고,
+    ARG db_name
+    --docker build 시 변숫값을 저장하면 이미지 내부로 인자가 몰린다.
+    $ docker build --build-arg db_name=jpub_db ,
+    CMD db_start.sh -h 127.0.0.1 -d ${b_name}
+    ```
+
+- ONBUILD
+
+  - 처음 이미지 빌드에 포함하지만 실행되지 않고, 해당 이미지가 다른 이미지의 기본 이미지로 사용되는 경우 실행될 명령을 지정할 때 장성한다.
+
+  - ONBUILD 명령은 부모 Dockerfile이 자식 Dockerfile에 전달하는 방식이다.
+
+  - 예를들어 1차 개발에서 환경을 만들어주고, 2차 개발에서 ONBUILD에 지정된 소스를 실행하는 것이다.
+
+  - 사용 방법
+
+    ```dockerfile
+    --1차 Dockerfile 빌드 시 ONBUILD 포함.
+    ONBUILD ADD websource.tar.gz /usr/share/nginx/html/
+    
+    --2차 Dockerfile에 1차에서 생성된 이미지를 지정하면 ONBUILD에 지정된 ADD 명령이 실행되어 새로운 이미지로 생성된다.
+    ```
+
+- STOPSIGNAM
+
+  - docker stop 명령은 컨테이너에게 SIGTERM을 보내 정지한다. 이때 다른 시그널을 넣고자 하는 경우 작성한다.
+
+  - 사용 방법
+
+    ```dockerfile
+    STOPSIGNAL SIGKILL	# 시그널 번호 또는 이름
+    ```
+
+- SHELL
+
+  - Dockerfile 내부에서 사용할 기본 셸을 지정하는 경우 작성
+
+  - 기본값으로 '/bin/sh'가 지정됨
+
+  - 사용 방법
+
+    ```dockerfile
+    SHELL ["/bin/bash", "-c"]
+    RUN echo "DOcker world!"
+    ```
+
+- HEALTHCHECK
+
+  - 컨테이너의 프로세스 상태를 체크하고자 하는 경우에 작성
+
+  - HEALTHCHECK는 하나의 명령만이 유효하고, 여러 개가 지정된 경우 마지막에 선언된 HEALTHCHECK가 적용됨
+
+  - HEALTHCHECK 옵션
+
+    | 옵션            | 설명           | 기본값 |
+    | --------------- | -------------- | ------ |
+    | --interval=(초) | 헬스 체크 간격 | 30s    |
+    | --timeout=(초)  | 타임 아웃      | 30s    |
+    | --retries=N     | 타임 아웃 횟수 | 3      |
+
+  - HEALTHCHECK 상태 코드
+
+    | EXIT 코드    | 설명                                   |
+    | ------------ | -------------------------------------- |
+    | 0: success   | 컨테이너가 정상적이고 사용 가능한 상태 |
+    | 1: unhealthy | 컨테이너가 올바르게 작동하지 않는 상태 |
+    | 2: starting  | 예약된 코드                            |
+
+  - docker container inspect [컨테이너명] 또는 docker ps에서 확인할 수 있다.
+
+  - 사용 방법
+
+  - 1분마다 CMD에 있는 명령을 실행하여 3초 이상이 소요되면 한 번의 실패로 간주하고 5번의 타임 아웃이 발생하면 컨테이너의 상태를 "unhealthy"로 변경한다.
+
+    ```dockerfile
+    HEALTHCHECK --interval=1m --timeout=3s --retries=5 \
+    	CMD curl -f http://localhost || exit 1
+    ```
+
 
 
 
