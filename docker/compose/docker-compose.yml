@@ -1,9 +1,7 @@
-
 version: '3.8'
 services:
-  database:
+  DB:
     image: mysql:5.7
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
       MYSQL_DATABASE: "${DB_DATABASE}"
@@ -14,6 +12,6 @@ services:
       - "3306:3306"
     
   test:
-    build: .
+    build: ./test
     ports:
       - "10000:10000"

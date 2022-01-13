@@ -509,13 +509,9 @@ ls /data-volume/
   - 이렇게 생성된 이미지를 컨테이너로 실행한 뒤 웹 소스 변경이 있다면 수정된 웹 소스를 docker cp 명령을 통해 다시 넣을 수 있다.
   - 이때 컨테이너 실행 시 볼륨을 지정했다면 애써 docker cp 명령을 사용하지 않고도 해당 볼륨 경로에 변경된 웹 소스만 넣어주면 바로 적용이 가능하다.
 
-```
-
-```
 
 
-
-## Dockerfile
+## Dockerfile(도커 파일)
 
 ### Dockerfile 명령어
 
@@ -851,24 +847,287 @@ ls /data-volume/
     	CMD curl -f http://localhost || exit 1
     ```
 
+ex) ubuntu환경위에서 python 설치
+
+```dockerfile
+FROM ubuntu:18.04
+
+RUN apt-get update -y
+RUN apt-get install python -y
+```
+
+실습 : 우분투 환경 위에서 python3 설치와 code-server 작동시키기
+
+```dockerfile
+FROM ubuntu:18.04
+
+RUN apt-get update
+RUN apt-get install python3 -y
+RUN apt-get install wget -y
+# RUN apt-get install python-pip -y
+# RUN apt-get iputils-ping -y
+# RUN apt-get install python-mysqldb -y
+# RUN apt-get install python-pymysql -y
+
+RUN wget https://github.com/coder/code-server/releases/download/v4.0.1/code-server_4.0.1_amd64.deb
+RUN dpkg -i code-server_4.0.1_amd64.deb
+CMD [ "code-server", "--bind-addr", "0.0.0.0:10000" ]
+```
+
+
+
+## Docker-compose(도커 컴포즈)
+
+### 실습
+
+./test의 Dockerfile
+
+```dockerfile
+FROM ubuntu:18.04
+
+RUN apt-get update
+RUN apt-get install python3 -y
+RUN apt-get install wget -y
+# RUN apt-get install python-pip -y
+# RUN apt-get iputils-ping -y
+# RUN apt-get install python-mysqldb -y
+# RUN apt-get install python-pymysql -y
+
+RUN wget https://github.com/coder/code-server/releases/download/v4.0.1/code-server_4.0.1_amd64.deb
+RUN dpkg -i code-server_4.0.1_amd64.deb
+CMD [ "code-server", "--bind-addr", "0.0.0.0:10000" ]
+```
+
+.env
+
+```
+DB_ROOT_PASSWORD=root
+DB_DATABASE=dockertest
+DB_USER=lhw
+DB_PASSWORD=1234
+```
+
+docker-compose.yml
+
+```yml
+version: '3.8'
+services:
+  DB:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    ports:
+      - "3306:3306"
+    
+  test:
+    build: ./test
+    ports:
+      - "10000:10000"
+```
+
+code-server
+
+```python
+# 접속 : localhost:10000
+# apt-get install python-pip -y
+# apt-get iputils-ping -y
+# apt-get install python-mysqldb -y
+# apt-get install python-pymysql -y
+import pymysql
+
+print('start')
+conn = pymysql.connect(host='DB', port=3306, user="lhw", password="1234")
+cur = conn.cursor()
+
+print('show')
+cur.execute("SHOW DATABASES")
+print(cur)
+for i in cur:
+    print(i)
+
+print('create')
+cur.execute("create table dockertest.test1(id int, name varchar(30), age int);")
+
+print('select, insert')
+sql = "select * from dockertest.test1"
+into_sql = 'insert into dockertest.test1 values("1", "hw", "24")'
+# select
+cur.execute(sql)
+datas = cur.fetchall()
+print(datas)
+# insert
+cur.execute(into_sql)
+cur.execute(sql)
+datas = cur.fetchall()
+print(datas)
+# conn.commit()
+
+
+cur.close()
+conn.close()
+print('end')
+
+# start
+# show
+# <pymysql.cursors.Cursor object at 0x7f1bc8e3af50>
+# ('information_schema',)
+# ('dockertest',)
+# create
+# select, insert
+# ()
+# ((1, 'hw', 24),)
+# end
+```
 
 
 
 
 
+## Docker Swarm mode(도커 스웜 모드)
+
+> 동일한 컨테이너를 공유하는 여러 클러스터 내의 노드에서 애플리케이션을 원활하게 실행할 수 있도록 하는 도커 자체 컨테이너 오케스트레이션 도구
+
+### 기본 세팅
+
+- Virtualbox가 필요
+- 학습 내용은 virtualbox에서 ubuntu를 설치하여 실행할 예정
+- 3개의 노드를 생성할 것임
+
+### 주요 기능
+
+- 분리된 분산 설계
+  - 매니저 노드
+  - 리더 노드
+  - 작업자 노드
+- 서비스 확장과 원하는 상태 조정
+
+- 서비스 스케줄링
+- 로드밸런싱
+- 서비스 검색
+  - 도커 스웜 모드는 서비스 검색을 위해 자체 DNS 서버를 통한 서비스 검색 기능을 제공
+- c롤링 업데이트
+
+### 도커 스웜 모드 클러스터 구성
+
+#### 도커 스웜 모드 구성을 위한 서버 구성
+
+- Oracle VirtualBox 기반의 우분투 이미지를 복제하여 3개로 만든 뒤 스웜 모드 클러스터를 위한 서버 구성을 수행
+
+| 노드         | 운영체제     | CPU    | Memory | IP 주소        |
+| ------------ | ------------ | ------ | ------ | -------------- |
+| swrm-manager | ubuntu 20.04 | 4 core | 4 GB   | 192.168.56.100 |
+| swrm-worker1 | ubuntu 20.04 | 2 core | 4 GB   | 192.168.56.101 |
+| swrm-worker2 | ubuntu 20.04 | 2 core | 4 GB   | 192.168.56.102 |
+
+1. 사용 중인 도커 호스트를 중지하고, 복제를 수행한다.
+2. 복제 구성에 필요한 내용을 다음과 같이 변경하고 [다음]을 클릭한다.
+   1. 머신 이름 변경: swrm-worker1(머신 이름은 스웜 모드 구성에 맞게 설정하는 사용자 지정이다.)
+   2. MAC 주소 정책 변경 : [모든 네트워크 어댑터의 새 MAC 주소 생성]을 선택해 새로운 주소를 할당받도록 한다.
+3. 복제 방식을 선택한다. 완전한 복제를 선택하여 기존 이미지의 모든 것을 복제한다.
+
+- 이러한 방식으로 원하는 작업자 노드 수만큼 복제를 수행하면 된다.
+
+- 복제  완료 시 각 노드에 접속하여 호스트명과 IP 주소를 수동으로 할당하여 각 노드가 충돌하지 않도록 서버 구성을 해야 한다.
+
+```
+# 매니저 노드 생성
+# 도커 스웜 모드의 노드가 매니저 노드에 접근하기 위한 IP를 입력
+docker swarm init --advertise-addr ---.---.---.---
+
+# 노드가 매니저 노드와 함께 클러스터에 합류할 수 있도록 해줌
+# 내용중에 docker swarm join --token ~~~~을 복사
+worker:~$ docker swarm join --token ~~~~
+
+# 매니저 노드에서 작업자 노드의 연결을 확인할 수 있음
+swarm-manager:~$ docker node ls
+
+# 운영 중 노드의 확장을 위해 새로운 토큰이 필요한 경우
+# --rotate 플래그를 사용하여 새 조인 토큰 생성
+docker swarm join-token --rotate worker
+
+# 조인 토큰만 새로 발급하는 경우에는 --quiet옵션
+docker swarm join-token -q worker
+
+# 노드 제거 명령
+# 매니저노드에서 worker노드 제거
+manager:~$ docker swarm leave worker
+
+# worker노드에서 제거
+worker:~$ docker swarm leave
+
+#매니저 노드에서 서비스 생성
+# 이름, 포트설정, 룰설정, 복제 몇개 만들건지
+docker service create --name=이름 --publish=숫자:숫자 --constraint node.role=worker --replicas 3 nginx
+# 만약 노드2개에 복제3개가 있으면 한 노드에 컨테이너가 두개 생성됨.
+
+# 서비스 조회
+docker service ls
+# 서비스에서 실행중인 컨테이너 정보 조회/ 로그의 기능도함
+docker service ps 서비스이름
+
+# docker swarm update 내용 서비스이름
+
+# 서비스 갯수 조정
+docker service scale 서비스이름=갯수
+
+# 롤백
+docker service rollback my-database2
+
+# 서비스 삭제
+docker service rm 서비스이름
+```
 
 
 
 
 
+## AWS
 
+### EC2
 
+- 클라우드 서비스 내에서 동작하는 인스턴스 그 무언가
+- 보안그룹 : 방화벽이라 생각하면 됨
 
+### S3
 
+- 버킷
+  - 한마디로 폴더로 봐도 무방하다
+  - 데이터를 저장하는 폴더
+  - C드라이브나 D드라이브 같은 아주 큰~ 저장소로 보면됨
+  - 클라우드상에서 스토리지
+  - 다운로드나 업로드가 가능한데 권한이 필요함
+  - 권한은 키(IAM)를 사용함.
 
+### IAM
 
+- 자격증명을 해주는 키라고 보면 될 듯
+- 사용자로 만들 수도 있지만 그룹화도 가능
 
+### VPC
 
+- 가상 버츄얼 프라이빗
+- DHCP 옵션 세트
+  - ip 재할당해주는 옵션
 
+### Route53
 
+- 아마존에서 관리하는 DNS(도메인 네임 서버)에 내 주소를 등록하는 것
+
+### CloudWatch
+
+- 모니터링 서비스
+
+### Lambda
+
+- 유저 -> URL호출(트리거) -> API 게이트웨이 -> lambda를 실행 -> 결과 -> 유저
+
+### Elastic Cache
+
+- save같은 녀석임
+- 노트북검색 -> 방대한 양을 계속 시간들여 주는것은 낭비
+- 전에 검색해봤으면 그 내용을 갖고있다가 바로보여주는것
 

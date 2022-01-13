@@ -77,3 +77,12 @@
   - Dockerfile 작성
     - ubuntu를 베이스로 python 실행
     - code-server 실행
+
+## 2022/01/12
+
+- Docker
+  - Docker-compose 학습
+    - 야믈코드 작성법
+  - docker-compose.yml 작성
+    - 기존에 작성한 Dockerfile과 mysql이미지를 이용한 야믈코드 작성
+  - Docker Swarm 학습
