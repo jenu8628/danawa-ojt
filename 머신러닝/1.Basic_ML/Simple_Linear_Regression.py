@@ -86,3 +86,24 @@ for step in range(300):
 
     if step % 10 == 0:
         print('{:5} | {:10.4f} | {:10.6f}'.format(step, cost.numpy(), w.numpy()[0]))
+
+
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras import optimizers
+
+# 케라스를 이용한 표현
+x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+y = [11, 22, 33, 44, 53, 66, 77, 87, 95]
+
+model = Sequential()
+
+model.add(Dense(1, input_dim=1, activation='linear'))
+
+sgd = optimizers.SGD(lr=0.01)
+
+model.compile(optimizer=sgd, loss='mse', metrics=['mse'])
+
+model.fit(x, y, epochs=300)
+print(model.predict([8.5]))

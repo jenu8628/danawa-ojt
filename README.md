@@ -7,7 +7,7 @@
 ## 2022/01/03(월)
 
 - 프로그램 환경 세팅
-  - Sametime, RoketChat, VS Code
+  - Sametime, RocketChat, VS Code
 
 ## 2022/01/04(화)
 
