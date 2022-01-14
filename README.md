@@ -86,3 +86,27 @@
   - docker-compose.yml 작성
     - 기존에 작성한 Dockerfile과 mysql이미지를 이용한 야믈코드 작성
   - Docker Swarm 학습
+
+## 2022/01/13
+
+- Docker
+  - Docker swarm
+    - virtualbox에서 docker swarm 실습
+    - AWS 위에서 도커 스웜 클라스터 적용
+- AWS
+  - AWS 를 활용한 컨테이너 서비스 개념 학습
+  - EC2, S3, IAM, VPN, Route53, CloudWatch, Lambda, ElasticCache
+
+## 2022/01/14
+
+- 머신러닝
+
+  - 선형회귀 학습 및 실습 (+ 미분)
+
+  - 로지스틱 회귀 학습 및 실습
+
+  - 다중 입력에 대한 실습
+
+  - 벡터와 행렬 연산 학습
+
+  - 소프트맥스 회귀 학습 및 실습
