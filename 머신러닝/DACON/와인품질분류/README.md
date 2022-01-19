@@ -18,47 +18,37 @@
 
 생각보다 예측치가 높게 나오지 않아 과대적합을 줄이고 예측점수를 높이는 방법을 생각해 보고 노력을 해야 할 것 같습니다.
 
+
+
 # 데이터 분석
 
-## train 데이터
+### train 데이터
 
 - quality 품질
-
 - fixed acidity 산도
-
 - volatile acidity 휘발성산
-
 - citric acid 시트르산
-
 - residual sugar 잔당 : 발효 후 와인 속에 남아있는 당분
-
 - chlorides 염화물
-
 - free sulfur dioxide 독립 이산화황
-
 - total sulfur dioxide 총 이산화황
-
 - density 밀도
-
 - pH 수소이온농도
-
 - sulphates 황산염
-
 - alcohol 도수
-
 - type 종류
+
+
 
 ### 데이터의 종류와 특징
 
 - 5497개 훈련 데이터
-
 - 결측치 없음
-
 - 입력 : quality를 제외한 나머지 특성
-
 - 타깃 : quality
-
 - 13개의 column - index제외 12개
+
+
 
 ### 속성간 상관관계
 
@@ -81,9 +71,18 @@ sns.heatmap(data = train.corr(), annot=True)
 plt.show()
 ```
 
-![2022-01-18-10-32-27-image.png](C:\Users\admin\Desktop\study\머신러닝\DACON\와인품질분류\assets\2022-01-18-10-32-27-image.png)
+![image-20220119092830587](README.assets/image-20220119092830587.png)
+
+```python
+# quality와 속성간의 상관관계만 보기
+plt.figure(figsize=(12,12))
+sns.heatmap(data=train.corr()[['quality']], annot=True)
+plt.show()
+```
 
 ![image-20220119091813732](README.assets/image-20220119091813732.png)
+
+
 
 ### 각 변수별 분포
 
@@ -99,6 +98,8 @@ plt.show()
 
 ![image-20220119091825996](README.assets/image-20220119091825996.png)
 
+
+
 ### train에서 각 변수와 quality 변수 사이 분포 확인
 
 ```python
@@ -111,6 +112,8 @@ plt.show()
 ```
 
 ![image-20220119091837221](README.assets/image-20220119091837221.png)
+
+
 
 ### 품질의 분포도
 
