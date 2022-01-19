@@ -37,9 +37,12 @@ class DataAnalysis:
         self.train = train
         self.test = test
 
-    def feature_correlation(self):
+    def feature_correlation(self, *feature):
         # 속성간 상관관계 그래프
-        sns.heatmap(data=self.train.corr(), annot=True)
+        if feature:
+            sns.heatmap(data=self.train.corr()[['quality']], annot=True)
+        else:
+            sns.heatmap(data=self.train.corr(), annot=True)
         plt.show()
 
     def distribution(self):
@@ -156,7 +159,7 @@ def predict_data(model, test_input):
     return model.predict(test_input)
 
 def generate_submission(submission_path ,test_target):
-    # 모델의 test 결과값 생성 함수
+    # 모델의 test 예측값 파일 생성 함수
     submission = pd.read_csv(submission_path)
     submission['quality'] = test_target
     submission.to_csv(submission_path, index=False)
@@ -197,7 +200,7 @@ if __name__ == '__main__':
 
     # 2. 데이터를 분석
     data = DataAnalysis(train, test)    # 그래프 클래스
-    # data.feature_correlation()    # 상관관계 그래프
+    data.feature_correlation('quality')    # 상관관계 그래프
     # data.distribution()   # 분포도 그래프
     # data.distribute_between(target)   # 원하는 속성과 나머지 속성들의 분포도
 
@@ -221,7 +224,7 @@ if __name__ == '__main__':
     # model = lm.extra_tree()
     # model = lm.gradient_boosting()
 
-    # 5.교차 검증 및 중요도
+    # 5.교차 검증 및 속성 중요도
     valid = cross_validation(model, train_input, train_target)  # 교차 검증
     print(valid)
     imt = feature_importance(model, train_input, train_target)  # 속성 중요도 검사
