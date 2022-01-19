@@ -18,8 +18,6 @@
 
 생각보다 예측치가 높게 나오지 않아 과대적합을 줄이고 예측점수를 높이는 방법을 생각해 보고 노력을 해야 할 것 같습니다.
 
-
-
 # 데이터 분석
 
 ## train 데이터
@@ -85,7 +83,7 @@ plt.show()
 
 ![2022-01-18-10-32-27-image.png](C:\Users\admin\Desktop\study\머신러닝\DACON\와인품질분류\assets\2022-01-18-10-32-27-image.png)
 
-![2022-01-18-16-30-45-image.png](C:\Users\admin\Desktop\study\머신러닝\DACON\와인품질분류\assets\2022-01-18-16-30-45-image.png)
+![image-20220119091813732](README.assets/image-20220119091813732.png)
 
 ### 각 변수별 분포
 
@@ -99,7 +97,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![2022-01-18-10-25-08-image.png](C:\Users\admin\Desktop\study\머신러닝\DACON\와인품질분류\assets\2022-01-18-10-25-08-image.png)
+![image-20220119091825996](README.assets/image-20220119091825996.png)
 
 ### train에서 각 변수와 quality 변수 사이 분포 확인
 
@@ -112,7 +110,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![2022-01-18-10-50-50-image.png](C:\Users\admin\Desktop\study\머신러닝\DACON\와인품질분류\assets\2022-01-18-10-50-50-image.png)
+![image-20220119091837221](README.assets/image-20220119091837221.png)
 
 ### 품질의 분포도
 
@@ -122,4 +120,4 @@ sns.displot(train.iloc[:,1])
 plt.show()
 ```
 
-![2022-01-18-15-23-41-image.png](C:\Users\admin\Desktop\study\머신러닝\DACON\와인품질분류\assets\2022-01-18-15-23-41-image.png)
+![image-20220119091847268](README.assets/image-20220119091847268.png)
