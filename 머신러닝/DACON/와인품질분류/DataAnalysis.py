@@ -11,7 +11,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier, GradientBoostingClassifier, ExtraTreesClassifier, RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import cross_validate, StratifiedKFold, RandomizedSearchCV
-from sklearn.linear_model import LogisticRegression
 
 # train 데이터 - 훈련 데이터 5497개
 # 결측치 없음

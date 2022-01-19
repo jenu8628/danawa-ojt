@@ -20,6 +20,24 @@
 
 
 
+### 사용 모듈
+
+```python
+import sys
+
+import pandas as pd
+import numpy as np
+from scipy.stats import uniform, randint
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.inspection import permutation_importance
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, GradientBoostingClassifier, ExtraTreesClassifier, RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import cross_validate, StratifiedKFold, RandomizedSearchCV
+```
+
 
 
 ### 본문 코드
@@ -29,7 +47,6 @@ if __name__ == '__main__':
     train_csv = ""
     test_csv = ""
     submission_path = ""
-    test_target = ""
     if len(sys.argv) == 5:
         train_csv = sys.argv[1]
         test_csv = sys.argv[2]
@@ -61,7 +78,7 @@ if __name__ == '__main__':
 
     # 2. 데이터를 분석
     data = DataAnalysis(train, test)    # 그래프 클래스
-    data.feature_correlation('quality')    # 상관관계 그래프
+    data.feature_correlation()    # 상관관계 그래프
     # data.distribution()   # 분포도 그래프
     # data.distribute_between(target)   # 원하는 속성과 나머지 속성들의 분포도
 
@@ -91,15 +108,13 @@ if __name__ == '__main__':
     print(imt)
     # print(np.mean(valid['train_score']), np.mean(valid['test_score']))
 
-    # 7. 예측모델 만들기
+    # 6. 예측값 만들기
     test_target = predict_data(model, test_input)
     # print(test_target)
 
-    # 6.파일로 저장
+    # 7.파일로 저장
     generate_submission(submission_path, test_target)
 ```
-
-
 
 
 
@@ -165,12 +180,9 @@ class DataAnalysis:
         self.train = train
         self.test = test
 
-    def feature_correlation(self, *feature):
+    def feature_correlation(self):
         # 속성간 상관관계 그래프
-        if feature:
-            sns.heatmap(data=self.train.corr()[['quality']], annot=True)
-        else:
-            sns.heatmap(data=self.train.corr(), annot=True)
+        sns.heatmap(data=self.train.corr(), annot=True)
         plt.show()
 
     def distribution(self):
