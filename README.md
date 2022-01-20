@@ -162,14 +162,15 @@
 
 ## 2022/01/18
 
-- 머신러닝
-  
-  - [DACON 와인 품질 분류](https://dacon.io/competitions/open/235610/overview/description) 
+- [DACON 와인 품질 분류](https://dacon.io/competitions/open/235610/overview/description) 
   - EDA(탐색적 데이터 분석)
-  
     - matplot 사용
-  - 여러가지 지도학습 알고리즘 이용하기
-    - 히스토그램 기반 그래디언트 부스팅, 랜덤 포레스트,엑스트라 트리
+  - 모델링
+    - 히스토그램 기반 그래디언트 부스팅
+    - 랜덤 포레스트
+    - 엑스트라 트리
+  - 분류
+  - 코드리뷰
 
 ## 2022/01/19
 
@@ -177,13 +178,48 @@
   - class 및 함수를 이용한 코드 추상화
 
 - [타이타닉 생존자 예측](https://dacon.io/competitions/open/235539/overview/description)
-  - EDA(탐색적 데이터 분석)
-    - matplot 사용
+  - - EDA(탐색적 데이터 분석)
+      - matplot 사용 시각화
+    - 모델링
+      - 랜덤 서치
+      - LightGBM
+      - 로지스트회귀
+    - 분류
+    - 코드리뷰
 
 ## 2022/01/20
 
 - [타이타닉 생존자 예측](https://dacon.io/competitions/open/235539/overview/description)
-  - 다양한 앙상블학습 이용하기
-    - 히스토그램 기반 그래디언트 부스팅, LightGBM
-    - 과대적합을 줄이고 예측율을 높이기 위한 데이터 분석 재시도
-      - 결측치 처리에 관한 문제 해결
+  - 결측치 채우는 여러가지 방법 실습
+    - 평균
+    - Groub by
+    - 상관관계가 높은 컬럼에 대한 평균
+    - 삭제
+
+- Web 기반 지식 학습
+
+  - WS 와 WAS 의 차이
+
+  - OSI 7계층과 TCP/IP의 차이
+
+  - uwsgi 와 nginx를 쓰는 이유 학습
+
+- Flask 학습
+
+  - Flask 셋팅 (윈도우, 리눅스)
+    - 라우터 사용
+    - REST API 실습
+
+  - 와인 품질 분류 웹 서비스 만들기
+
+  - 타이타닉 생존자 예측 웹 서비스 만들기
+
+## 2022/01/21
+
+- 와인
+  - 데이터 분석 다시해봐라
+- 플라스크
+  - 음 css만 하면 될듯?
+  - 연결방법은 알았으니
+  - 근데 느린 속도 어케 처리해야 할지 물어보자
+

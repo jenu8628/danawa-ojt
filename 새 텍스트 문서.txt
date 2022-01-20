@@ -1,0 +1,29 @@
+오늘 할일
+- 결정 트리
+- 랜덤 포레스트
+
+MSA
+- 프로젝트가 커질수록
+- 사람이 관리하기 힘듬
+- 의존성이 생겨져버림
+
+osi 7 layer
+tcp/udp 4rayer
+
+web server 와 WAS 차이
+http
+https: http + ssl
+
+nginx, uwsgi
+client - nginx - uwsgi - flask - db
+uwsgi에 이미 ssl이 있으므로
+client - uwsgi - flask - db 이렇게 써도됨
+
+플라스크에서 사용할 내용
+productName
+productCode
+
+client -> code -->(code로부터 명칭/이미지 찾고 -> 학습된 내용 -> 결과 -> client
+
+와일 품질 분류
+- feature가 여러개 있고

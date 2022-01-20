@@ -23,50 +23,15 @@ from sklearn.model_selection import cross_validate, StratifiedKFold, RandomizedS
 # 분석과 훈련을 통해
 # 사라진 quality에 대한 분류를 하면됨.
 
-def read_csv(train_csv, test_csv):
-    # 학습할 훈련 데이터와 테스트 데이터 불러오기
+def read_csv(train_csv):
+    # 학습할 훈련 데이터 불러오기
     train = pd.read_csv(train_csv)
-    test = pd.read_csv(test_csv)
-    return train, test
-
-class DataAnalysis:
-    # 데이터 분석 클래스
-    plt.figure(figsize=(12, 12))
-    def __init__(self, train, test):
-        self.train = train
-        self.test = test
-
-    def feature_correlation(self, *feature):
-        # 속성간 상관관계 그래프
-        if feature:
-            sns.heatmap(data=self.train.corr()[['quality']], annot=True)
-        else:
-            sns.heatmap(data=self.train.corr(), annot=True)
-        plt.show()
-
-    def distribution(self):
-        # 각 피쳐 별 분포도
-        for i in range(1, 13):
-            plt.subplot(3, 4, i)
-            # train의 i번째열의 전체 행
-            sns.distplot(self.train.iloc[:, i])
-        plt.tight_layout()
-        plt.show()
-
-    def distribute_between(self, feature):
-        # train 데이터에서 각 변수와 param 사이 분포 그래프
-        for i in range(2, 13):
-            plt.subplot(3, 4, i - 1)
-            sns.barplot(x=feature, y=self.train.columns[i], data=self.train)
-        plt.tight_layout()
-        plt.show()
-
+    return train
 
 class PreProcessor:
     # 데이터 전처리 클래스
-    def __init__(self, train, test):
+    def __init__(self, train):
         self.train = train
-        self.test = test
 
     def object_to_int(self, feature):
         # 오브젝트 타입을 숫자로 변환 하는 함수
@@ -74,10 +39,7 @@ class PreProcessor:
         enc = LabelEncoder()
         enc.fit(self.train[feature])
         train[feature] = enc.transform(self.train[feature])
-        test[feature] = enc.transform(self.test[feature])
-        # self.train['type'] = self.train['type'].map({'white':0, 'red':1}).astype(int)
-        # self.test['type'] = self.test['type'].map({'white':0, 'red':1}).astype(int)
-        return train, test
+        return train
 
     def feature_data(self, features):
         # 테스트 인풋, 학습 인풋, 학습 타겟 데이터 속성 조절 및 정규화 함수
@@ -86,14 +48,7 @@ class PreProcessor:
 
         train_target = self.train['quality'].copy()
         train_input = self.train.drop(features + ['quality'], axis=1)
-        test_input = self.test.drop(features, axis=1)
-        # train_input = pd.concat([train['alcohol'], train['density']], axis=1)
-        # test_input = pd.concat([test['alcohol'], test['density']], axis=1)
-        # ss = StandardScaler()
-        # ss.fit(train_input)
-        # train_scale = ss.transform(train_input)
-        # test_scale = ss.transform(test_input)
-        return train_input, train_target, test_input
+        return train_input, train_target
 
 class ModelFactory:
     # 학습 모델 클래스
@@ -139,9 +94,9 @@ def cross_validation(model, train_input, train_target):
     # train_input : 학습 입력 데이터
     # train_target : 학습 정답 데이터
     return cross_validate(model, train_input, train_target,
-                          return_train_score=True,
-                          cv=StratifiedKFold(shuffle=True),
-                          n_jobs=-1)
+                        return_train_score=True,
+                        cv=StratifiedKFold(shuffle=True),
+                        n_jobs=-1)
 
 def feature_importance(model, train_input, train_target):
     # 속성값 중요도 검사 함수
@@ -149,7 +104,7 @@ def feature_importance(model, train_input, train_target):
     # train_input : 학습 입력 데이터
     # train_target : 학습 정답 데이터
     return permutation_importance(model, train_input, train_target,
-                                  n_repeats=1, n_jobs=-1)
+                                n_repeats=1, n_jobs=-1)
 
 def predict_data(model, test_input):
     # 예측값 반환 함수
@@ -161,7 +116,8 @@ def generate_submission(submission_path ,test_target):
     # 모델의 test 예측값 파일 생성 함수
     submission = pd.read_csv(submission_path)
     submission['quality'] = test_target
-    submission.to_csv('baseline.csv', index=False)
+    submission.to_csv(submission_path, index=False)
+
 
 if __name__ == '__main__':
     train_csv = ""
@@ -181,8 +137,8 @@ if __name__ == '__main__':
     features = [
         'index',
         'fixed acidity',
-        # 'volatile acidity',
-        'citric acid',
+        'volatile acidity',
+        # 'citric acid',
         'residual sugar',
         # 'chlorides',
         'free sulfur dioxide',
@@ -191,7 +147,7 @@ if __name__ == '__main__':
         'pH',
         'sulphates',
         # 'alcohol',
-        'type'
+        # 'type'
     ]
 
     # 1. 데이터 불러오기
@@ -199,7 +155,7 @@ if __name__ == '__main__':
 
     # 2. 데이터를 분석
     data = DataAnalysis(train, test)    # 그래프 클래스
-    # data.feature_correlation('quality')    # 상관관계 그래프
+    data.feature_correlation('quality')    # 상관관계 그래프
     # data.distribution()   # 분포도 그래프
     # data.distribute_between(target)   # 원하는 속성과 나머지 속성들의 분포도
 
@@ -213,9 +169,9 @@ if __name__ == '__main__':
     # 4.모델 학습
     lm = ModelFactory(train_input, train_target)
     params = {'min_impurity_decrease': uniform(0.0001, 0.001),
-                  'max_depth': randint(100, 1000),
-                  'min_samples_split': randint(2, 20),
-                  'min_samples_leaf': randint(1, 20)}
+                'max_depth': randint(100, 1000),
+                'min_samples_split': randint(2, 20),
+                'min_samples_leaf': randint(1, 20)}
     model = lm.hist_gradient()
     # model = lm.random_forest()
     # model = lm.random_search(min_impurity_decrease=uniform(0.0001, 0.001), max_depth=randint(100, 1000))
@@ -225,18 +181,33 @@ if __name__ == '__main__':
 
     # 5.교차 검증 및 속성 중요도
     valid = cross_validation(model, train_input, train_target)  # 교차 검증
-    print(np.mean(valid['train_score']), np.mean(valid['test_score']))
+    print(valid)
     imt = feature_importance(model, train_input, train_target)  # 속성 중요도 검사
-    print(imt['importances_mean'])
+    print(imt)
     # print(np.mean(valid['train_score']), np.mean(valid['test_score']))
-
+    
     # 7. 예측모델 만들기
     test_target = predict_data(model, test_input)
     # print(test_target)
 
     # 6.파일로 저장
-    generate_submission(submission_path, test_target)
-
+    # generate_submission(submission_path, test_target)
 
 else:
-    print('임포트 되어 사용되면 이 문구가 출력됨')
+    features = [
+    'index',
+    'fixed acidity',
+    'citric acid',
+    'residual sugar',
+    'free sulfur dioxide',
+    'total sulfur dioxide',
+    'pH',
+    'sulphates',
+    ]
+    train = read_csv('train.csv')
+    prep = PreProcessor(train)    # 데이터 전처리 클래스
+    train= prep.object_to_int('type')
+    prep.train = train
+    train_input, train_target = prep.feature_data(features)
+    lm = ModelFactory(train_input, train_target)
+    model = lm.hist_gradient()

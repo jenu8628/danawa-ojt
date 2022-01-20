@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>와인예측</h1>
+    <h4>아래 수치를 모드 체크해 주세요</h4>
+    <form action="http://192.168.0.127:4000/wine" method="POST">
+        염화물 : <input type="number" name="chlorides">
+        휘발성산 : <input type="number" name="volatile_acidity">
+        밀도 : <input type="number" name="density">
+        도수 : <input type="number" name="alcohol">
+        <select name="wine_type" id="type">
+            <option for="type" value='0'>White</option>
+            <option for="type" value='1'>Red</option>
+        </select>
+        <input type="submit" value="submit">
+    </form>
+
+</body>
+</html>
