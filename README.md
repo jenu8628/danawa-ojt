@@ -165,9 +165,25 @@
 - 머신러닝
   
   - [DACON 와인 품질 분류](https://dacon.io/competitions/open/235610/overview/description) 
-  
   - EDA(탐색적 데이터 분석)
-    
-    - matplot 사용
   
+    - matplot 사용
   - 여러가지 지도학습 알고리즘 이용하기
+    - 히스토그램 기반 그래디언트 부스팅, 랜덤 포레스트,엑스트라 트리
+
+## 2022/01/19
+
+- [DACON 와인 품질 분류](https://dacon.io/competitions/open/235610/overview/description) 
+  - class 및 함수를 이용한 코드 추상화
+
+- [타이타닉 생존자 예측](https://dacon.io/competitions/open/235539/overview/description)
+  - EDA(탐색적 데이터 분석)
+    - matplot 사용
+
+## 2022/01/20
+
+- [타이타닉 생존자 예측](https://dacon.io/competitions/open/235539/overview/description)
+  - 다양한 앙상블학습 이용하기
+    - 히스토그램 기반 그래디언트 부스팅, LightGBM
+    - 과대적합을 줄이고 예측율을 높이기 위한 데이터 분석 재시도
+      - 결측치 처리에 관한 문제 해결

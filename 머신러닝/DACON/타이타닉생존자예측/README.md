@@ -76,20 +76,34 @@ def read_csv(train_csv, test_csv):
 ### 데이터 분석
 
 - 891개의 훈련 데이터
+
 - 결측치 존재(Age, cabin, Embarked)
   1. cabin : 정보가 너무 적으므로 제외
+  
   2. 평균으로 채운다.
-     1. 70점대 나옴.
+     1. 예측률 : 70점대 나옴.
+  
   3. 빈 곳의 해당 컬럼 값을 예측해서 채운다.
      1. Age와 Embarked는 상관관계 그래프 상에서도 큰 상관관계를 갖지 않는 수치를 보인다.
      2. 그렇다면 Age를 먼저 학습 할 때 ->Embarked를 제외
      3. Embarked를 모델학습할 때 Age를 제외
      4. 마지막으로 survived를 예측
+  
+     - 교차검증 하였을 때 Age 예측률이 너무 낮아 기각
+  
+  4. 컬럼 대비 평균을 구해보자
+  
+     1. 상관관계그래프 확인
+     2. Age와 가장 상관관계가 있는 컬럼은 Pclass(등실의 등급)이다.
+     3. pclass(1,2,3으로 이루어짐)에 따른 Age 평균을 내서 채워주자.
+     4. 
+  
 - 필요없는 컬럼 정리
   - PassengerId
   - Ticket
   - Cabin
   - Name
+  
 - 문자열 -> 인트로 전환
   - Sex
   - Embarked
