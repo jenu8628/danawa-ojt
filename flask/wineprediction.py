@@ -1,5 +1,5 @@
 import sys
-
+import pickle
 import pandas as pd
 import numpy as np
 from scipy.stats import uniform, randint
@@ -9,7 +9,7 @@ import seaborn as sns
 from sklearn.inspection import permutation_importance
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier, GradientBoostingClassifier, ExtraTreesClassifier, RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import cross_validate, StratifiedKFold, RandomizedSearchCV
 
 # train 데이터 - 훈련 데이터 5497개
@@ -120,80 +120,6 @@ def generate_submission(submission_path ,test_target):
 
 
 if __name__ == '__main__':
-    train_csv = ""
-    test_csv = ""
-    submission_path = ""
-    test_target = ""
-    if len(sys.argv) == 5:
-        train_csv = sys.argv[1]
-        test_csv = sys.argv[2]
-        submission_path = sys.argv[3]
-        target = sys.argv[4]
-        print("data_setting complete")
-    else:
-        print("usage : $ python main.py <train_csv> <train_csv> <train_csv> <train_csv>")
-        exit(0)
-
-    features = [
-        'index',
-        'fixed acidity',
-        'volatile acidity',
-        # 'citric acid',
-        'residual sugar',
-        # 'chlorides',
-        'free sulfur dioxide',
-        'total sulfur dioxide',
-        # 'density',
-        'pH',
-        'sulphates',
-        # 'alcohol',
-        # 'type'
-    ]
-
-    # 1. 데이터 불러오기
-    train, test = read_csv(train_csv, test_csv)
-
-    # 2. 데이터를 분석
-    data = DataAnalysis(train, test)    # 그래프 클래스
-    data.feature_correlation('quality')    # 상관관계 그래프
-    # data.distribution()   # 분포도 그래프
-    # data.distribute_between(target)   # 원하는 속성과 나머지 속성들의 분포도
-
-    # 3. 데이터 전처리
-    prep = PreProcessor(train, test)    # 데이터 전처리 클래스
-    a, b = prep.object_to_int('type')
-    train_input, train_target, test_input = prep.feature_data(features)
-    # pd.set_option('display.max_columns', None)
-    # print(train_input.head(1))
-
-    # 4.모델 학습
-    lm = ModelFactory(train_input, train_target)
-    params = {'min_impurity_decrease': uniform(0.0001, 0.001),
-                'max_depth': randint(100, 1000),
-                'min_samples_split': randint(2, 20),
-                'min_samples_leaf': randint(1, 20)}
-    model = lm.hist_gradient()
-    # model = lm.random_forest()
-    # model = lm.random_search(min_impurity_decrease=uniform(0.0001, 0.001), max_depth=randint(100, 1000))
-    # model = lm.random_search(params)
-    # model = lm.extra_tree()
-    # model = lm.gradient_boosting()
-
-    # 5.교차 검증 및 속성 중요도
-    valid = cross_validation(model, train_input, train_target)  # 교차 검증
-    print(valid)
-    imt = feature_importance(model, train_input, train_target)  # 속성 중요도 검사
-    print(imt)
-    # print(np.mean(valid['train_score']), np.mean(valid['test_score']))
-    
-    # 7. 예측모델 만들기
-    test_target = predict_data(model, test_input)
-    # print(test_target)
-
-    # 6.파일로 저장
-    # generate_submission(submission_path, test_target)
-
-else:
     features = [
     'index',
     'fixed acidity',
@@ -204,10 +130,12 @@ else:
     'pH',
     'sulphates',
     ]
-    train = read_csv('train.csv')
+    train = read_csv('wine.csv')
     prep = PreProcessor(train)    # 데이터 전처리 클래스
     train= prep.object_to_int('type')
     prep.train = train
     train_input, train_target = prep.feature_data(features)
     lm = ModelFactory(train_input, train_target)
     model = lm.hist_gradient()
+    with open('winePickle.pickle', 'wb') as f:
+        pickle.dump(model, f)

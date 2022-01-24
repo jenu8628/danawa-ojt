@@ -1,0 +1,21 @@
+.main-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+.main-container > div {
+  margin-bottom: 5em;
+}
+
+.atag {
+  text-decoration : none;
+  font-size: 1.3em;
+  transition-duration: 0.3s;
+  color: rgb(6, 7, 7);
+}
+
+.atag:hover {
+  font-size: 1.5em;
+  color: rgb(28, 81, 83);
+}

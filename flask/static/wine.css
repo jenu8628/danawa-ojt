@@ -1,0 +1,77 @@
+.gettwine-container{
+	display: flex;
+	width: 100%;
+	flex-flow: column;
+	align-items: center;
+}
+
+.postwine-container{
+	display: flex;
+	width: 100%;
+	flex-flow: column;
+	align-items: center;
+}
+
+.btn {
+	transition-duration: 0.2s;
+	font-size: 1.3em;
+	background-color: rgb(255, 255, 255);
+	border-radius: 10px;
+	border: none;
+}
+
+.btn:hover {
+	font-size: 1.5em;
+	cursor: pointer;
+	background-color: black;
+	color: white;
+	
+}
+
+.btn-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.a-btn {
+	transition-duration: 0.2s;
+	font-size: 1.3em;
+	background-color: rgb(255, 255, 255);
+	color:black;
+	border-radius: 10px;
+	text-decoration: none;
+}
+
+.a-btn:hover {
+	font-size: 1.5em;
+	width: 5em;
+	cursor: pointer;
+	background-color: black;
+	color: white;
+	display: flex;
+	justify-content: center;
+}
+
+.select-class {
+	transition-duration: 0.5s;
+	width: 100%;
+	height: 2em;
+	font-size: 1em;
+	border-radius: 5px 5px 5px 5px;
+	margin-top: 10px;
+}
+
+
+.input-class {
+	margin-top: 5px;
+	width: 100%;
+	border-radius: 3px;
+	transition-duration: 0.3s;
+	font-size: 1.2em;
+}
+
+.input-class:focus {
+	outline:1px solid #9796bb;
+	transition-duration: 0.3s;
+}

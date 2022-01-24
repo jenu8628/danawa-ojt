@@ -1,21 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='wine.css') }}">
+	<title>와인 품질 예측</title>
 </head>
 <body>
+	{% if site == 'POST' %}
+	<div class="gettwine-container">
+		<h1>와인 품질 예측</h1>
+		<h2>예상 품질 등급 : {{result}} 등급</h2>
+		<a class="a-btn" href="{{ url_for('home') }}">메인으로</a>
+	</div>
+	{% else %}
+	<div class="postwine-container">
     <h1>와인 품질 예측</h1>
-    <h2>{{username}}</h2>
-    
-    <h3>품질 : {{result}} 등급</h3>
-    <hr>
-    <h3>입력 내용</h3>
-    <h4>염화물 : {{chlorides}}</h4>
-    <h4>시트르산 : {{volatile_acidity}}</h4>
-    <h4>밀도 : {{density}}</h4>
-    <h4>도수 : {{alcohol}}</h4>
+    <h4>아래 수치를 모드 체크해 주세요</h4>
+    <form action="http://192.168.0.127:4000/wine/" method="POST">
+      <p>염화물 <input type="number" name="chlorides" step="0.001" class="input-class"></p>
+      <p>휘발성산 <input type="number" name="volatile_acidity" step="0.001" class="input-class"></p>
+      <p>밀도 <input type="number" name="density" step="0.00001" class="input-class"></p>
+      <p>도수 <input type="number" name="alcohol" step="0.1" class="input-class"></p>
+      <select name="wine_type" class="select-class" id="type">
+        <option for="type" value='0'>White</option>
+        <option for="type" value='1'>Red</option>
+      </select>
+      <p class="btn-container"><input class="btn" type="submit" value="예측하기"></p>
+    </form>
+    <p class="btn-container"><a class="a-btn" href="{{ url_for('home') }}">메인으로</a></p>
+  </div>
+	{% endif %}
 </body>
 </html>

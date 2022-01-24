@@ -13,6 +13,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from lightgbm import LGBMClassifier
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, GradientBoostingClassifier, ExtraTreesClassifier, RandomForestClassifier
+from sklearn.model_selection import cross_validate, StratifiedKFold, RandomizedSearchCV
+from sklearn.inspection import permutation_importance
 ```
 
 
@@ -36,6 +45,8 @@ if __name__ == "__main__":
 
 # 1. 데이터 읽어오기
     train, test = read_csv(train_csv, test_csv)
+    train = train.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1)
+    test = test.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1)
 
 # 2. 데이터 전처리 및 분석
     # 2-1) 결측치 채우기
@@ -49,9 +60,13 @@ if __name__ == "__main__":
         # 2-1-3) Age: Pclass에 따라 평균 채우기
     train, test = pre.Age_mean()
     pre.train, pre.test = train, test
-    # print(train.pivot_table(values='Embarked', index='Pclass', aggfunc='mean'))
 
-    # 2-2) 오브젝트를 인트형으로 바꾸는 작업 + cabin 제거
+    # 집단에 대한 통계량 확인
+    # Pclass 컬럼값에 따른 Fare값의 평균
+    # train[['Pclass', 'Fare']].groupby('Pclass').mean()
+    # Pclass 컬럼값에 따른 Embarked의 평균균
+    # print(train.pivot_table(values='Embarked', index='Pclass', aggfunc='mean'))
+    # 2-2) 오브젝트를 인트형으로 바꾸는 작업
     train, test = pre.object_to_int('Sex', 'Embarked')
     pre.train, pre.test = train, test
 
@@ -61,38 +76,38 @@ if __name__ == "__main__":
 
     # 2-4) 필요없는 속성 제거
     features = [
-        'PassengerId',
-        'Name',
-        'Ticket',
         'SibSp',
         'Parch',
         # 'Sex',
         # 'Pclass',
         # 'Age',
-        # 'Fare',
-        'Embarked'
+        'Fare',
+        'Embarked',
+        # 'Family_size'
     ]
     train_input, train_target, test_input = pre.feature_data(features)
     pd.set_option('display.max_columns', None)
     print(train_input.head(0))
 
-
 # 3. 모델 훈련
     lm = ModelFactory(train_input, train_target)
+    # model = lm.logistic_reg()
     model = lm.hist_gradient()
     # model = lm.light_gbm()
-    #
-    #
-    # 4. 교차 검증 및 속성 중요도 파악
+    # model = lm.random_forest()
+
+
+# 4. 교차 검증 및 속성 중요도 파악
     valid = cross_validation(model, train_input, train_target)  # 교차 검증
     print(np.mean(valid['train_score']), np.mean(valid['test_score']))
+    # print(valid)
     imt = feature_importance(model, train_input, train_target)  # 속성 중요도 검사
     print(imt['importances_mean'])
 
-    # 5. 예측값 만들기
+# 5. 예측값 만들기
     test_target = predict_data(model, test_input)
 
-    # 6. 파일로 저장
+# 6. 파일로 저장
     generate_submission(submission_path, test_target, save_path)
 ```
 
@@ -256,7 +271,7 @@ class PreProcessor:
             enc.fit(self.train[feature])
             train[feature] = enc.transform(self.train[feature])
             test[feature] = enc.transform(self.test[feature])
-        return train.drop('Cabin', axis=1), test.drop('Cabin', axis=1)
+        return train, test
 
     # 결측치 처리 : 평균으로 결측치 채우기
     def fill_value(self):
@@ -304,9 +319,25 @@ class PreProcessor:
         # 인트형 전환
         train = train.astype({'Age': 'int'})
         test = test.astype({'Age': 'int'})
-        # Embarked, Fare : 결측치 채우기
-        train["Embarked"].fillna('S', inplace=True)
+        # # Embarked, Fare : 결측치 채우기
         test["Fare"].fillna(12, inplace=True)
+        # train["Embarked"].fillna('S', inplace=True)
+        # Embarked, Fare : 결측치 삭제
+        train = train.dropna(subset=['Embarked'])
+
+        # SibSp와 Parch를 더해서 가족의 수 컬럼을 새로 만든다.
+        train['Family_Size'] = train['SibSp'] + train['Parch']
+        test['Family_Size'] = test['SibSp'] + test['Parch']
+        # survibed의 내용에 따라 그룹으로 묶는다.
+        train['Family_Size'].apply(lambda x: 0 if x == 0 else x)
+        train['Family_Size'].apply(lambda x: 0 if 0 < x <= 3 else x)
+        train['Family_Size'].apply(lambda x: 0 if 3 < x else x)
+        test['Family_Size'].apply(lambda x: 0 if x == 0 else x)
+        test['Family_Size'].apply(lambda x: 0 if 0 < x <= 3 else x)
+        test['Family_Size'].apply(lambda x: 0 if 3 < x else x)
+        # Fare는 표준편차가 너무 크므로 Log를 씌워주자.
+        train['Fare'] = np.log1p(train['Fare'])
+        test['Fare'] = np.log1p(test['Fare'])
         return train, test
 
     # 필요없는 속성값 제거 후 입력과 타깃 데이터 나누기
@@ -315,6 +346,15 @@ class PreProcessor:
         train_input = self.train.drop(features + ['Survived'], axis=1)
         test_input = self.test.drop(features, axis=1)
         return train_input, train_target, test_input
+
+    # Age 평균을 위해 데이터 슬라이싱
+    # 예측률이 너무 낮아 기각
+    def slice_data(self, feature):
+        id = self.train[self.train['Age'].isnull()]['PassengerId'].copy()
+        train_target = self.train['Age'].copy().dropna().astype({'Age':'int'})
+        train_input = self.train.drop(feature, axis=1).dropna().drop('Age', axis=1)
+        test_input = self.train[self.train['Age'].isnull()].drop(feature + ['Age'], axis=1)
+        return id, train_input, train_target, test_input
 ```
 
 

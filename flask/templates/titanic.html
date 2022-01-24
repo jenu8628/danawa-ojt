@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='titanic.css') }}">
+	<title>타이타닉 생존여부 예측</title>
+</head>
+<body>
+	{% if site == 'POST' %}
+	<div class="gettitanic-container">
+		<h1>타이타닉 생존여부</h1>
+		<h2>생존 여부 : {{result}} </h2>
+		<h3>입력 내용</h3>
+		<h4>성별 : {{sex}}</h4>
+		<h4>객실 등급 : {{Pclass}}</h4>
+		<h4>나이 : {{age}}</h4>
+		<h4>탑승 가족 인원 : {{family}}</h4>
+		<a class="a-btn" href="{{ url_for('home') }}">메인으로</a>
+	</div>
+
+	{% else %}
+	<div class="posttitanic-container">
+		<h1>타이타닉 생존자 예측</h1>
+		<h4>아래 정보를 입력해 주세요</h4>
+		<form action="http://192.168.0.127:4000/titanic" method="POST">
+			<select name="sex" id="sex" class="select-class">
+				<option for="sex" value='female'>female</option>
+				<option for="sex" value='male'>male</option>
+			</select>
+			<select name="Pclass" id="Pclass" class="select-class">
+				<option for="Pclass" value='C'>C</option>
+				<option for="Pclass" value='Q'>Q</option>
+				<option for="Pclass" value='S'>S</option>
+			</select>
+			<p>나이 <input type="number" name="age" class="input-class"></p>
+			<p>탑승 가족 인원 <input type="number" name="family" class="input-class"></p>
+			<div class="btn-container">
+				<input class="btn" type="submit" value="예측하기">
+			</div>
+		</form>
+		<a class="a-btn" href="{{ url_for('home') }}">메인으로</a>
+	</div>
+
+	{% endif %}
+</body>
+</html>
