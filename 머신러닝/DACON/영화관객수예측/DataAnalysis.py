@@ -7,10 +7,10 @@ import re
 
 from sklearn.metrics import mean_squared_error
 from sklearn.inspection import permutation_importance
-from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
+from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor, GradientBoostingRegressor, ExtraTreesRegressor
 from lightgbm import LGBMRegressor
 from sklearn.model_selection import cross_validate, KFold
-from xgboost import XGBRegressor
+from xgboost import XGBRegressor, XGBRFRegressor
 
 
 
@@ -127,86 +127,101 @@ class ModelFactory:
 
     # 히스토그램 그래디언트 부스팅 학습 모델
     def hist_gradient(self):
-        kf = KFold(n_splits=10, shuffle=True, random_state=42)
+        # kf = KFold(n_splits=10, shuffle=True, random_state=42)
         hg = HistGradientBoostingRegressor()
-        rmse_list = []
-        hg_pred = np.zeros((test.shape[0]))
-        for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
-            tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
-            val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
-
-            hg.fit(tr_x, tr_y)
-
-            pred = np.expm1([0 if x < 0 else x for x in hg.predict(val_x)])
-            sub_pred = np.expm1([0 if x < 0 else x for x in hg.predict(self.test_input)])
-            rmse = np.sqrt(mean_squared_error(val_y, pred))
-
-            rmse_list.append(rmse)
-
-            hg_pred += (sub_pred / 10)
-        return hg_pred, rmse_list
+        return hg.fit(self.train_input, self.train_target)
+        # rmse_list = []
+        # hg_pred = np.zeros((test.shape[0]))
+        # for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
+        #     tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
+        #     val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
+        #
+        #     hg.fit(tr_x, tr_y)
+        #
+        #     pred = np.expm1([0 if x < 0 else x for x in hg.predict(val_x)])
+        #     sub_pred = np.expm1([0 if x < 0 else x for x in hg.predict(self.test_input)])
+        #     rmse = np.sqrt(mean_squared_error(val_y, pred))
+        #
+        #     rmse_list.append(rmse)
+        #
+        #     hg_pred += (sub_pred / 10)
+        # return hg_pred, rmse_list
 
     # 랜덤 포레스트 학습 모델
     def random_forest(self):
-        kf = KFold(n_splits=10, shuffle=True, random_state=42)
+        # kf = KFold(n_splits=10, shuffle=True, random_state=42)
         rf = RandomForestRegressor()
-        rmse_list = []
-        rf_pred = np.zeros((test.shape[0]))
-        for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
-            tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
-            val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
-
-            rf.fit(tr_x, tr_y)
-
-            pred = np.expm1([0 if x < 0 else x for x in rf.predict(val_x)])
-            sub_pred = np.expm1([0 if x < 0 else x for x in rf.predict(self.test_input)])
-            rmse = np.sqrt(mean_squared_error(val_y, pred))
-
-            rmse_list.append(rmse)
-
-            rf_pred += (sub_pred / 10)
-        return rf_pred, rmse_list
+        return rf.fit(self.train_input, self.train_target)
+        # rmse_list = []
+        # rf_pred = np.zeros((test.shape[0]))
+        # for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
+        #     tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
+        #     val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
+        #
+        #     rf.fit(tr_x, tr_y)
+        #
+        #     pred = np.expm1([0 if x < 0 else x for x in rf.predict(val_x)])
+        #     sub_pred = np.expm1([0 if x < 0 else x for x in rf.predict(self.test_input)])
+        #     rmse = np.sqrt(mean_squared_error(val_y, pred))
+        #
+        #     rmse_list.append(rmse)
+        #
+        #     rf_pred += (sub_pred / 10)
+        # return rf_pred, rmse_list
 
     # LightGBM 모델
     def light_gbm(self):
-        kf = KFold(n_splits=10, shuffle=True, random_state=42)
+        # kf = KFold(n_splits=10, shuffle=True, random_state=42)
         lgbm = LGBMRegressor()
-        rmse_list = []
-        lgbm_pred = np.zeros((test.shape[0]))
-        for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
-            tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
-            val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
-
-            lgbm.fit(tr_x, tr_y)
-
-            pred = np.expm1([0 if x < 0 else x for x in lgbm.predict(val_x)])
-            sub_pred = np.expm1([0 if x < 0 else x for x in lgbm.predict(self.test_input)])
-            rmse = np.sqrt(mean_squared_error(val_y, pred))
-
-            rmse_list.append(rmse)
-
-            lgbm_pred += (sub_pred / 10)
-        return lgbm_pred, rmse_list
+        return lgbm.fit(self.train_input, self.train_target)
+        # rmse_list = []
+        # lgbm_pred = np.zeros((test.shape[0]))
+        # for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
+        #     tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
+        #     val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
+        #
+        #     lgbm.fit(tr_x,
+        #              tr_y,
+        #              eval_set=[(tr_x, tr_y), (val_x, val_y)],
+        #              eval_metric="rmse")
+        #
+        #     pred = np.expm1([0 if x < 0 else x for x in lgbm.predict(val_x)])
+        #     sub_pred = np.expm1([0 if x < 0 else x for x in lgbm.predict(self.test_input)])
+        #     rmse = np.sqrt(mean_squared_error(val_y, pred))
+        #
+        #     rmse_list.append(rmse)
+        #
+        #     lgbm_pred += (sub_pred / 10)
+        # return lgbm_pred, rmse_list
 
     def xgbm(self):
-        kf = KFold(n_splits=10, shuffle=True, random_state=42)
-        xg = LGBMRegressor()
-        rmse_list = []
-        xg_pred = np.zeros((test.shape[0]))
-        for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
-            tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
-            val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
+        # kf = KFold(n_splits=10, shuffle=True, random_state=42)
+        xg = XGBRFRegressor()
+        return xg.fit(self.train_input, self.train_target)
+        # rmse_list = []
+        # xg_pred = np.zeros((test.shape[0]))
+        # for tr_idx, val_idx in kf.split(self.train_input, self.train_target):
+        #     tr_x, tr_y = self.train_input.iloc[tr_idx], self.train_target.iloc[tr_idx]
+        #     val_x, val_y = self.train_input.iloc[val_idx], self.train_target.iloc[val_idx]
+        #
+        #     xg.fit(tr_x, tr_y)
+        #
+        #     pred = np.expm1([0 if x < 0 else x for x in xg.predict(val_x)])
+        #     sub_pred = np.expm1([0 if x < 0 else x for x in xg.predict(self.test_input)])
+        #     rmse = np.sqrt(mean_squared_error(val_y, pred))
+        #
+        #     rmse_list.append(rmse)
+        #
+        #     xg_pred += (sub_pred / 10)
+        # return xg_pred, rmse_list
 
-            xg.fit(tr_x, tr_y)
+    def extra(self):
+        extra = ExtraTreesRegressor()
+        return extra.fit(self.train_input, self.train_target)
 
-            pred = np.expm1([0 if x < 0 else x for x in xg.predict(val_x)])
-            sub_pred = np.expm1([0 if x < 0 else x for x in xg.predict(self.test_input)])
-            rmse = np.sqrt(mean_squared_error(val_y, pred))
-
-            rmse_list.append(rmse)
-
-            xg_pred += (sub_pred / 10)
-        return xg_pred, rmse_list
+    def gradientboosting(self):
+        gb = GradientBoostingRegressor()
+        return gb.fit(self.train_input, self.train_target)
 
 
 # 교차 검증 함수
@@ -216,7 +231,7 @@ def cross_validation(model, train_input, train_target):
     # train_target : 학습 정답 데이터
     # kf = KFold(n_splits=10, shuffle=True, random_state=42)
     return cross_validate(model, train_input, train_target,
-                          cv= 5,
+                          cv=5,
                           return_train_score=True,
                           scoring='neg_mean_squared_error',
                           n_jobs=-1)
@@ -233,7 +248,7 @@ def feature_importance(model, train_input, train_target):
 def predict_data(model, test_input):
     # model : 학습된 모델
     # test_input : 테스트 입력 데이터
-    return model.predict(test_input)
+    return np.expm1(model.predict(test_input))
 
 # 모델의 test 예측값 파일 생성 함수
 def generate_submission(submission_path ,test_target, save_path):
@@ -272,15 +287,49 @@ if __name__ == "__main__":
     np.set_printoptions(precision=6, suppress=True)
     # 2. 모델링 및 예측, 검사
     lr = ModelFactory(train_input, train_target, test_input)
-    rf_test_target, rf_test_validation = lr.random_forest()
+    # rf_test_target, rf_test_validation = lr.random_forest()
     # print(rf_test_target)
     # hg_test_target, hg_test_validation = lr.hist_gradient()
     # print(hg_test_target)
-    lgbm_test_target, lgbm_test_validation = lr.hist_gradient()
-    xgbm_test_target, xgbm_test_validation = lr.xgbm()
-    print(xgbm_test_target)
-    print(xgbm_test_validation)
-    test_target = (rf_test_target + lgbm_test_target + xgbm_test_target) / 3
-    print(pd.DataFrame(test_target).round())
+    # lgbm_test_target, lgbm_test_validation = lr.light_gbm()
+    lgbm_model = lr.light_gbm()
+    value = cross_validation(lgbm_model, train_input, train_target)
+    print(np.sqrt(-1 * value['train_score']).mean(), end=", ")
+    print(np.sqrt(-1 * value['test_score']).mean())
+    lgbm_test_target = predict_data(lgbm_model, test_input)
+
+    xg_model = lr.xgbm()
+    value = cross_validation(xg_model, train_input, train_target)
+    print(np.sqrt(-1 * value['train_score']).mean(), end=", ")
+    print(np.sqrt(-1 * value['test_score']).mean())
+    xgbm_test_target = predict_data(xg_model, test_input)
+
+    hg_model = lr.hist_gradient()
+    value = cross_validation(hg_model, train_input, train_target)
+    print(np.sqrt(-1 * value['train_score']).mean(), end=", ")
+    print(np.sqrt(-1 * value['test_score']).mean())
+    hg_test_target = predict_data(hg_model, test_input)
+
+    rf_model = lr.random_forest()
+    value = cross_validation(rf_model, train_input, train_target)
+    print(np.sqrt(-1 * value['train_score']).mean(), end=", ")
+    print(np.sqrt(-1 * value['test_score']).mean())
+    rf_test_target = predict_data(rf_model, test_input)
+
+    gb_model = lr.gradientboosting()
+    value = cross_validation(gb_model, train_input, train_target)
+    print(np.sqrt(-1 * value['train_score']).mean(), end=", ")
+    print(np.sqrt(-1 * value['test_score']).mean())
+    gb_test_target = predict_data(gb_model, test_input)
+
+
+    test_target = (lgbm_test_target + xgbm_test_target + hg_test_target + rf_test_target + gb_test_target) / 5
+    print(test_target)
+    # print()
+    # xgbm_test_target, xgbm_test_validation = lr.xgbm()
+    # print(xgbm_test_target)
+    # print(xgbm_test_validation)
+    # test_target = (rf_test_target + lgbm_test_target + xgbm_test_target) / 3
+    # print(pd.DataFrame(test_target).round())
     # # 3. 파일로 저장
     generate_submission('submission.csv', test_target, 'predict.csv')

@@ -235,3 +235,13 @@
       - matplot 사용
     - 모델링
     - 분류
+
+## 2022/01/25
+
+- 머신 러닝 학습  
+  - [해외 축구 선수 이적료 예측](https://dacon.io/competitions/open/235538/overview/description)
+    - EDA(탐색적 데이터 분석)
+      - matplot 사용
+    - 모델링
+    - 분류
+    - 코드 리뷰
