@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='movie.css') }}">
+	<title>영화 관객수 예측</title>
+</head>
+<body>
+	{% if site == 'POST' %}
+	<div class="movie-container">
+		<h1>영화 관객수 예측</h1>
+		<h2>예상 관객수 : {{result}} 명</h2>
+		<a class="a-btn" href="{{ url_for('home') }}">메인으로</a>
+	</div>
+	{% else %}
+	<div class="movie-container">
+		<h1>영화 관객수 예측</h1>
+		<h4>아래 수치를 모두 작성해 주세요</h4>
+		<form action="{{ url_for('movie') }}" method="POST">
+			<select name="screening_rat" id="screening_rat" class="select-class">
+				<option for="screening_rat" value='0'>12세 관람가</option>
+				<option for="screening_rat" value='1'>15세 관람가</option>
+				<option for="screening_rat" value='2'>전체 관람가</option>
+				<option for="screening_rat" value='3'>청소년 관람불가</option>
+			</select>
+			<select name="genre" id="genre" class="select-class">
+				{% for key, value in genre.items() %}
+				<option for="genre" value='{{ key }}'>{{key}}</option>
+				{% endfor %}
+			</select>
+			<p>영화 배급사 <input type="text" name="distributor" class="input-class"></p>
+			<p>상영시간(분) <input type="number" name="time" class="input-class"></p>
+			<p>스태프 수 <input type="number" name="num_staff" class="input-class"></p>
+			<p>주연배우 수 <input type="number" name="num_actor" class="input-class"></p>
+			<p class="btn-container"><input type="submit" value="예측하기" class="btn"></p>
+		</form>
+		<p class="btn-container"><a class="a-btn" href="{{ url_for('home') }}">메인으로</a></p>
+	</div>
+	{% endif %}
+</body>
+</html>

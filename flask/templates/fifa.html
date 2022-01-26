@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	.	<link rel="stylesheet" href="{{ url_for('static', filename='fifa.css') }}">
+	<title>선수 이적료 예측</title>
+</head>
+<body>
+	{% if site == 'POST' %}
+	<div class="fifa-container">
+		<h1>선수 이적료 예측</h1>
+		<h2>예상 이적료 : {{result}} 유로</h2>
+		<a class="a-btn" href="{{ url_for('home') }}">메인으로</a>
+	</div>
+	{% else %}
+	<div class="fifa-container">
+		<h1>선수 이적료 예측</h1>
+		<h4>아래 수치를 모두 작성해 주세요</h4>
+		<form action="{{ url_for('fifa') }}" method="POST">
+			<p> 선수 나이 : <input type="number" name="age" class="input-class"></p>
+			<select name="continent" id="continent" class="select-class">
+				<option for="continent" value='0'>아프리카</option>
+				<option for="continent" value='1'>아시아</option>
+				<option for="continent" value='2'>유럽</option>
+				<option for="continent" value='3'>오세아니아</option>
+				<option for="continent" value='4'>남아메리카</option>
+			</select>
+
+			<p>선수의 계약 만료일 <input type="date" name='contract_until' class="input-class"></p>
+			<p>포지션
+				<select name="position" id="position" class="select-class">
+					<option for="position" value='0'>수비수</option>
+					<option for="position" value='1'>골키퍼</option>
+					<option for="position" value='2'>미드필더</option>
+					<option for="position" value='3'>스트라이커</option>
+				</select>
+			</p>
+
+			<p>선수 유명도
+				<select name="reputation" id="reputation" class="select-class">
+					<option for="reputation" value='1'>1</option>
+					<option for="reputation" value='2'>2</option>
+					<option for="reputation" value='3'>3</option>
+					<option for="reputation" value='4'>4</option>
+					<option for="reputation" value='5'>5</option>
+				</select>
+			</p>
+			
+			<p>선수의 현재 능력치(0~100) <input type="number" name="stat_overall" class="input-class"></p>
+			<p>선수가 경험 및 노력을 통해 발전할 수 있는 정도(0~100) : <input type="number" name="stat_potential" class="input-class"></p>
+
+			<p>선수 개인기 능력치
+				<select name="stat_skill_moves" id="stat_skill_moves" class="select-class">
+					<option for="stat_skill_moves" value='1'>1</option>
+					<option for="stat_skill_moves" value='2'>2</option>
+					<option for="stat_skill_moves" value='3'>3</option>
+					<option for="stat_skill_moves" value='4'>4</option>
+					<option for="stat_skill_moves" value='5'>5</option>
+				</select>
+			</p>
+			<p class="btn-container"><input class="btn" type="submit" value="예측하기"></p>
+		</form>
+		<p class="btn-container"><a class="a-btn" href="{{ url_for('home') }}">메인으로</a></p>
+	</div>
+	{% endif %}
+</body>
+</html>

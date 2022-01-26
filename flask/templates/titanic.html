@@ -24,7 +24,7 @@
 	<div class="posttitanic-container">
 		<h1>타이타닉 생존자 예측</h1>
 		<h4>아래 정보를 입력해 주세요</h4>
-		<form action="http://192.168.0.127:4000/titanic" method="POST">
+		<form action="{{ url_for('titanic') }}" method="POST">
 			<select name="sex" id="sex" class="select-class">
 				<option for="sex" value='female'>female</option>
 				<option for="sex" value='male'>male</option>

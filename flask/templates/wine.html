@@ -9,16 +9,16 @@
 </head>
 <body>
 	{% if site == 'POST' %}
-	<div class="gettwine-container">
+	<div class="wine-container">
 		<h1>와인 품질 예측</h1>
 		<h2>예상 품질 등급 : {{result}} 등급</h2>
 		<a class="a-btn" href="{{ url_for('home') }}">메인으로</a>
 	</div>
 	{% else %}
-	<div class="postwine-container">
+	<div class="wine-container">
     <h1>와인 품질 예측</h1>
     <h4>아래 수치를 모드 체크해 주세요</h4>
-    <form action="http://192.168.0.127:4000/wine/" method="POST">
+    <form action="{{ url_for('wine') }}" method="POST">
       <p>염화물 <input type="number" name="chlorides" step="0.001" class="input-class"></p>
       <p>휘발성산 <input type="number" name="volatile_acidity" step="0.001" class="input-class"></p>
       <p>밀도 <input type="number" name="density" step="0.00001" class="input-class"></p>

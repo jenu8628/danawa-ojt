@@ -124,7 +124,7 @@ class ModelFactory:
             sub_pred = np.expm1([0 if x < 0 else x for x in ngb.predict(self.test_input)]) / 10
             ngb_pred += sub_pred
         print(f'{ngb.__class__.__name__}의 10fold 평균 RMSE는 {np.mean(rmse_list)}')
-        return ngb_pred, rmse_list
+        return ngb_pred, rmse_list, ngb
 
 def generate_submission(submission_path ,test_target, save_path):
     submission = pd.read_csv(submission_path)
@@ -142,6 +142,7 @@ if __name__ == "__main__":
     # 1-1) contract_until을 인트형으로 변환
     train, test = pre.conversion_contract_until()
     pre.train, pre.test = train, test
+    print(train['continent'].value_counts())
     # 1-2) log Transformation
     train[['age', 'stat_potential']] = np.log1p(train[['age', 'stat_potential']])
     test[['age', 'stat_potential']] = np.log1p(test[['age', 'stat_potential']])
@@ -158,13 +159,16 @@ if __name__ == "__main__":
         'stat_skill_moves'
     ]
     train_input, train_target, test_input = pre.feature_data(temp)
-
+    print(train_input.info())
+    print(train_target.head())
+    print(np.expm1(train_target.head()))
     # 모델링 및 예측
     lr = ModelFactory(train_input, train_target, test_input)
-    ngb_pred, rmse_list = lr.ngboost()
+    ngb_pred, rmse_list, model = lr.ngboost()
     print(ngb_pred)
     print(rmse_list)
-
-    # 5. test_input을 파일로 만들기
-    generate_submission('submission.csv', ngb_pred, 'predict.csv')
+    print(np.expm1(model.predict(test_input)))
+    #
+    # # 5. test_input을 파일로 만들기
+    # generate_submission('submission.csv', ngb_pred, 'predict.csv')
 

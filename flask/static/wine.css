@@ -1,37 +1,8 @@
-.gettwine-container{
+.wine-container{
 	display: flex;
 	width: 100%;
 	flex-flow: column;
 	align-items: center;
-}
-
-.postwine-container{
-	display: flex;
-	width: 100%;
-	flex-flow: column;
-	align-items: center;
-}
-
-.btn {
-	transition-duration: 0.2s;
-	font-size: 1.3em;
-	background-color: rgb(255, 255, 255);
-	border-radius: 10px;
-	border: none;
-}
-
-.btn:hover {
-	font-size: 1.5em;
-	cursor: pointer;
-	background-color: black;
-	color: white;
-	
-}
-
-.btn-container {
-	width: 100%;
-	display: flex;
-	justify-content: center;
 }
 
 .a-btn {
@@ -53,6 +24,27 @@
 	justify-content: center;
 }
 
+.btn-container .btn {
+	transition-duration: 0.2s;
+	font-size: 1.3em;
+	background-color: rgb(255, 255, 255);
+	border-radius: 10px;
+	border: none;
+}
+
+.btn-container .btn:hover {
+	font-size: 1.5em;
+	cursor: pointer;
+	background-color: black;
+	color: white;
+}
+
+.btn-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
 .select-class {
 	transition-duration: 0.5s;
 	width: 100%;
@@ -61,7 +53,6 @@
 	border-radius: 5px 5px 5px 5px;
 	margin-top: 10px;
 }
-
 
 .input-class {
 	margin-top: 5px;

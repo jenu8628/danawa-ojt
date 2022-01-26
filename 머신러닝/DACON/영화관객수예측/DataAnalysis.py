@@ -282,6 +282,7 @@ if __name__ == "__main__":
     train_input, train_target, test_input = pre.feature_data()
     # print(test_input.info())
     # print(train_input.info())
+    print(test_input.head(6))
 
     # e표현 없애기
     np.set_printoptions(precision=6, suppress=True)
@@ -324,7 +325,7 @@ if __name__ == "__main__":
 
 
     test_target = (lgbm_test_target + xgbm_test_target + hg_test_target + rf_test_target + gb_test_target) / 5
-    print(test_target)
+    print(gb_test_target)
     # print()
     # xgbm_test_target, xgbm_test_validation = lr.xgbm()
     # print(xgbm_test_target)
@@ -332,4 +333,4 @@ if __name__ == "__main__":
     # test_target = (rf_test_target + lgbm_test_target + xgbm_test_target) / 3
     # print(pd.DataFrame(test_target).round())
     # # 3. 파일로 저장
-    generate_submission('submission.csv', test_target, 'predict.csv')
+    # generate_submission('submission.csv', test_target, 'predict.csv')
