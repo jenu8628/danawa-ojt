@@ -1,3 +1,4 @@
+from pickletools import optimize
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
 
@@ -43,3 +44,9 @@ model.compile(optimizer='sgd', loss='sparse_categorical_crossentropy', metrics='
 
 sgd = keras.optimizers.SGD()
 model.compile(optimizer=sgd, loss='sparse_categorical_crossentropy', metrics='accuracy')
+
+adagrad = keras.optimizers.Adagrad()
+model.compile(optimizer=adagrad, loss='sparse_categorical_crossentropy', metrics='accuracy')
+
+rmsprop = keras.optimizers.RMSprop()
+model.compile(optimizer=rmsprop, loss='sparse_categorical_crossentropy', metrics='accuracy')
