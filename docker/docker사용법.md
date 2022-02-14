@@ -1091,6 +1091,49 @@ docker service rm 서비스이름
 
 - 클라우드 서비스 내에서 동작하는 인스턴스 그 무언가
 - 보안그룹 : 방화벽이라 생각하면 됨
+- ssh연결시
+
+```txt
+[AWS ssh 포트 변경]
+#!/bin/bash -ex
+perl -pi -e 's/^#?Port 22$/Port 10000/' /etc/ssh/sshd_config
+service sshd restart || service ssh restart
+
+[AWS EC2 인스턴스 접근]
+ssh -i "pattern-analysis.pem" -p 10000 ec2-user@ec2-3-36-53-1.ap-northeast-2.compute.amazonaws.com
+
+# 퍼미션이 너무 공개되어서 접속 안될 수 있으니 프라이빗 키 퍼미션 변경
+chmod 600 ~/.ssh/your-key.pem
+
+# ~/.ssh 디렉토리에 키가 없을 시
+# cp : 복사 명령어
+# /mnt/c/Users/admin/.ssh/에 있는 lhw-ojt.pem을
+# ~/.ssh에 복사하겠다는 의미
+cp /mnt/c/Users/admin/.ssh/lhw-ojt.pem ~/.ssh
+```
+
+- 도커 설치
+
+```
+- yum업뎃
+sudo yum update -y
+- 도커설치
+sudo amazon-linux-extras install docker
+-도커 시작
+sudo service docker start
+- 권한 : ec2-user를 사용하지 않고도 도커 명령을 실행할 수 있도록 docker 그룹에 sudo를 추가합니다.
+sudo usermod -a -G docker ec2-user
+# 안되면 밑의 명령어
+sudo setfacl -m user:ec2-user:rw /var/run/docker.sock
+
+docker pull wkfwktka/project:0.0.1
+
+docker run -p 5000:5000 -it --name project1 wkfwktka/project:0.0.1
+```
+
+
+
+
 
 ### S3
 
@@ -1130,4 +1173,12 @@ docker service rm 서비스이름
 - save같은 녀석임
 - 노트북검색 -> 방대한 양을 계속 시간들여 주는것은 낭비
 - 전에 검색해봤으면 그 내용을 갖고있다가 바로보여주는것
+
+
+
+
+
+```
+sudo /etc/init.d/docker start
+```
 
