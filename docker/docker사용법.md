@@ -1182,3 +1182,37 @@ docker run -p 5000:5000 -it --name project1 wkfwktka/project:0.0.1
 sudo /etc/init.d/docker start
 ```
 
+
+
+
+
+## GCP
+
+- 리눅스 업데이트
+
+```
+$sudo apt-get update
+$sudo apt-get upgrade$
+```
+
+- ssh 포트 변경
+
+```
+- 아래 명령어 실행, 파일 오픈
+$sudo vi /etc/ssh/sshd_config
+- 방향키를 움직여서 22의 위에 커서가 올라가도록 함
+- x키 두번 입력(22 삭제됨)
+- a키 입력, 입력모드로 변경
+- 원하는 포트 입력(8080)
+- 키보드의 ESC버튼 입력, 입력모드 종료
+- :wq 입력후 Enter키 입력, 파일저장
+```
+
+
+
+- docker 설치
+
+```
+$sudo curl -fsSL https://get.docker.com/ | sudo sh
+```
+

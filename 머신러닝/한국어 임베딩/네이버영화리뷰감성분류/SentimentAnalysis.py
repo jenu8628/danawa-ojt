@@ -171,8 +171,10 @@ if __name__ == "__main__":
     # 샘플의 길이를 30으로 맞춘다.
     X_train = pad_sequences(X_train, maxlen=max_len)
     X_test = pad_sequences(X_test, maxlen=max_len)
-
+    print(X_train)
+    print(X_test)
     # ---------- LSTM으로 네이버 영화 리뷰 감성 분류하기 ----------
+
     # 하이퍼 파라미터
     # 임베딩 벡터의 차원 : 100, 은닉 상태의 크기 : 128, 모델 : 다 대 일 구조의 LSTM
     # 활성화 함수 : 시그모이드 함수
@@ -200,6 +202,3 @@ if __name__ == "__main__":
 
     loaded_model = load_model('best_model.h5')
     print("\n 테스트 정확도: %.4f" % (loaded_model.evaluate(X_test, y_test)[1]))
-
-
-
